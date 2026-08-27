@@ -19,7 +19,7 @@ export function PricingSection() {
       
       if (data.tracker) {
         // Step 2: Redirect user to Safepay's secure checkout page
-        window.location.href = `https://sandbox.api.getsafepay.com/checkout/pay?tracker=${data.tracker}&env=sandbox`;
+        window.location.href = `https://sandbox.api.getsafepay.com/checkout/pay?env=sandbox&tracker=${data.tracker}&source=custom&order_id=ORD-${Math.floor(Math.random() * 10000)}&redirect_url=${encodeURIComponent(window.location.origin + '/dashboard')}&cancel_url=${encodeURIComponent(window.location.origin + '/')}`;
       } else {
         alert("Failed to initialize payment.");
       }
