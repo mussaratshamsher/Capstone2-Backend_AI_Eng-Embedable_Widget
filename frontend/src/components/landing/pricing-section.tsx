@@ -1,4 +1,36 @@
+"use client";
+
+import { useState } from 'react';
+
 export function PricingSection() {
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const handleCheckout = async (plan: string) => {
+    setLoadingPlan(plan);
+    try {
+      // Step 1: Call your Next.js backend API to generate a Safepay Tracker
+      const res = await fetch('/api/checkout/safepay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan })
+      });
+      
+      const data = await res.json();
+      
+      if (data.tracker) {
+        // Step 2: Redirect user to Safepay's secure checkout page
+        window.location.href = `https://sandbox.api.getsafepay.com/checkout/pay?tracker=${data.tracker}&env=sandbox`;
+      } else {
+        alert("Failed to initialize payment.");
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      alert("Something went wrong with the checkout process.");
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
+
   return (
     <section id="pricing" className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-24">
       <div className="text-center mb-16 animate-fade-up">
@@ -7,7 +39,7 @@ export function PricingSection() {
         </h2>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Tier 1 */}
+        {/* Tier 1 - Free */}
         <div className="glass rounded-3xl p-8 flex flex-col animate-fade-up delay-100" style={{ border: '1px solid var(--border-default)' }}>
           <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-space-grotesk), sans-serif' }}>Starter</h3>
           <p className="text-3xl font-bold mb-1" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-space-grotesk), sans-serif' }}>$0</p>
@@ -17,12 +49,13 @@ export function PricingSection() {
             <li className="flex items-center gap-3"><span style={{ color: '#a78bfa' }}>✓</span> 100 AI Conversations/mo</li>
             <li className="flex items-center gap-3"><span style={{ color: '#a78bfa' }}>✓</span> Basic Dashboard</li>
           </ul>
+          {/* Free Tier: No payment logic */}
           <button className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all" style={{ background: 'rgba(139,92,246,0.1)', color: '#c4b5fd' }}>
             Get Started
           </button>
         </div>
 
-        {/* Tier 2 */}
+        {/* Tier 2 - Pro (Payment Integration) */}
         <div className="glass rounded-3xl p-8 flex flex-col relative animate-fade-up delay-200 shadow-2xl" style={{ border: '1px solid var(--border-strong)', background: 'rgba(124,58,237,0.05)' }}>
           <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-violet-600 to-indigo-600 px-4 py-1 rounded-full text-xs font-bold text-white shadow-lg shadow-violet-500/30">
             MOST POPULAR
@@ -36,12 +69,17 @@ export function PricingSection() {
             <li className="flex items-center gap-3"><span style={{ color: '#a78bfa' }}>✓</span> Custom AI Training</li>
             <li className="flex items-center gap-3"><span style={{ color: '#a78bfa' }}>✓</span> CRM Integrations</li>
           </ul>
-          <button className="btn-brand w-full py-2.5 rounded-xl text-sm font-semibold">
-            Start Free Trial
+          {/* Pro Tier: Triggers Safepay Checkout */}
+          <button 
+            onClick={() => handleCheckout('pro')}
+            disabled={loadingPlan === 'pro'}
+            className="btn-brand w-full py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50"
+          >
+            {loadingPlan === 'pro' ? 'Processing...' : 'Subscribe via Safepay'}
           </button>
         </div>
 
-        {/* Tier 3 */}
+        {/* Tier 3 - Custom/Enterprise (Payment Integration) */}
         <div className="glass rounded-3xl p-8 flex flex-col animate-fade-up delay-300" style={{ border: '1px solid var(--border-default)' }}>
           <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-space-grotesk), sans-serif' }}>Enterprise</h3>
           <p className="text-3xl font-bold mb-1" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-space-grotesk), sans-serif' }}>Custom</p>
@@ -52,8 +90,14 @@ export function PricingSection() {
             <li className="flex items-center gap-3"><span style={{ color: '#a78bfa' }}>✓</span> White-labeling</li>
             <li className="flex items-center gap-3"><span style={{ color: '#a78bfa' }}>✓</span> Dedicated Success Manager</li>
           </ul>
-          <button className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all" style={{ background: 'rgba(139,92,246,0.1)', color: '#c4b5fd' }}>
-            Contact Sales
+          {/* Enterprise Tier: Triggers Safepay Checkout */}
+          <button 
+            onClick={() => handleCheckout('enterprise')}
+            disabled={loadingPlan === 'enterprise'}
+            className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-50" 
+            style={{ background: 'rgba(139,92,246,0.1)', color: '#c4b5fd' }}
+          >
+            {loadingPlan === 'enterprise' ? 'Processing...' : 'Pay via Safepay'}
           </button>
         </div>
       </div>
