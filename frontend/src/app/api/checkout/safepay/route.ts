@@ -15,7 +15,7 @@ export async function POST(request: Request) {
 
     if (!clientKey || !secretKey) {
       console.error("Safepay credentials are not set in the environment.");
-      return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+      return NextResponse.json({ error: "Server configuration error: SAFE_PAY_PUBLIC_KEY or SAFE_PAY_SECRET_KEY is missing in Vercel environment variables." }, { status: 500 });
     }
 
     // Call Safepay API to initialize the transaction and get a tracker
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
         environment: 'sandbox',
         client: clientKey,
         amount: amount,
-        currency: 'USD', // Safepay supports PKR, USD, etc. (Check your merchant settings if USD is not enabled, switch to PKR)
+        currency: 'PKR', // Safepay usually expects PKR, changed from USD for testing if USD was disabled
       }),
     });
 
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
     if (!safepayRes.ok || !safepayData.data || !safepayData.data.token) {
       console.error("Safepay error:", safepayData);
-      return NextResponse.json({ error: "Failed to initialize payment with Safepay" }, { status: 500 });
+      return NextResponse.json({ error: "Failed to initialize payment with Safepay", details: safepayData }, { status: 500 });
     }
 
     // Safepay returns the tracker id in data.token
