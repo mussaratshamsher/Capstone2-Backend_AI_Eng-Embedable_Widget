@@ -5,7 +5,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const signature = request.headers.get('x-sfpy-signature');
-    const secretKey = process.env.SAFEP_PAY_SECRET_KEY; // Note: using exactly how it's spelled in .env
+    const secretKey = process.env.SAFE_PAY_SECRET_KEY; // Note: using exactly how it's spelled in .env
 
     if (!secretKey) {
       console.error("Safepay secret key is missing");

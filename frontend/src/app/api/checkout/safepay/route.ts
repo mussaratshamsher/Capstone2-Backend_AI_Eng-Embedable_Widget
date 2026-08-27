@@ -11,7 +11,7 @@ export async function POST(request: Request) {
 
     // Ensure Safepay keys exist
     const clientKey = process.env.SAFE_PAY_PUBLIC_KEY;
-    const secretKey = process.env.SAFEP_PAY_SECRET_KEY; // Note: using exactly how it's spelled in .env
+    const secretKey = process.env.SAFE_PAY_SECRET_KEY; // Note: using exactly how it's spelled in .env
 
     if (!clientKey || !secretKey) {
       console.error("Safepay credentials are not set in the environment.");
