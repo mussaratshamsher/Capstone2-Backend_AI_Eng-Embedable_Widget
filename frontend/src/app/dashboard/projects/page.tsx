@@ -30,7 +30,7 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ name: '', website_url: '', description: '', ai_instructions: '', welcome_message: '', business_type: '' });
+  const [formData, setFormData] = useState({ name: '', website_url: '', description: '', ai_instructions: '', welcome_message: '', business_type: '', theme_color: '#7c3aed' });
 
   const loadOrgs = useCallback(async () => {
     try {
@@ -75,9 +75,10 @@ export default function ProjectsPage() {
         business_type: formData.business_type || undefined,
         ai_instructions: formData.ai_instructions || undefined,
         welcome_message: formData.welcome_message || undefined,
+        theme_color: formData.theme_color || '#7c3aed',
       });
       setProjects([project, ...projects]);
-      setFormData({ name: '', website_url: '', description: '', ai_instructions: '', welcome_message: '', business_type: '' });
+      setFormData({ name: '', website_url: '', description: '', ai_instructions: '', welcome_message: '', business_type: '', theme_color: '#7c3aed' });
       setShowForm(false);
       toast('Project created', 'success');
     } catch (err) {
@@ -177,12 +178,31 @@ export default function ProjectsPage() {
                   required
                 />
               </div>
-              <Input
-                label="Business Type"
-                placeholder="SaaS, E-commerce, etc."
-                value={formData.business_type}
-                onChange={(e) => setFormData({ ...formData, business_type: e.target.value })}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input
+                  label="Business Type"
+                  placeholder="SaaS, E-commerce, etc."
+                  value={formData.business_type}
+                  onChange={(e) => setFormData({ ...formData, business_type: e.target.value })}
+                />
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-zinc-200">Brand Color (Hex)</label>
+                  <div className="flex gap-2 items-center">
+                    <input
+                      type="color"
+                      value={formData.theme_color}
+                      onChange={(e) => setFormData({ ...formData, theme_color: e.target.value })}
+                      className="h-10 w-10 rounded cursor-pointer bg-zinc-900 border-zinc-800"
+                    />
+                    <Input
+                      placeholder="#7c3aed"
+                      value={formData.theme_color}
+                      onChange={(e) => setFormData({ ...formData, theme_color: e.target.value })}
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+              </div>
               <Textarea
                 label="Description"
                 placeholder="What is this project about?"

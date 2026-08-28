@@ -17,6 +17,7 @@ import {
   getAdminUsers,
   adminDeleteOrganization,
   adminDeleteProject,
+  adminBanProject,
 } from '@/lib/api';
 import type { AdminStats, AdminOrganization, AdminProject, AdminUser } from '@/types';
 
@@ -44,6 +45,7 @@ export default function AdminDashboardPage() {
     name: string;
   }>({ open: false, type: 'organization', id: '', name: '' });
   const [deleting, setDeleting] = useState(false);
+  const [banReason, setBanReason] = useState('');
 
   // Check admin authorization
   useEffect(() => {
@@ -90,20 +92,29 @@ export default function AdminDashboardPage() {
       if (deleteModal.type === 'organization') {
         await adminDeleteOrganization(deleteModal.id);
         setOrganizations((prev) => prev.filter((o) => o.id !== deleteModal.id));
-        // Also remove projects associated with this org
         setProjects((prev) => prev.filter((p) => p.organization_id !== deleteModal.id));
         toast(`Organization "${deleteModal.name}" deleted`, 'success');
       } else {
-        await adminDeleteProject(deleteModal.id);
-        setProjects((prev) => prev.filter((p) => p.id !== deleteModal.id));
-        toast(`Project "${deleteModal.name}" deleted`, 'success');
+        if (banReason.trim() !== '') {
+          // If reason provided, ban the project instead of hard delete
+          await adminBanProject(deleteModal.id, banReason);
+          toast(`Project "${deleteModal.name}" banned for misuse`, 'success');
+          // Reload projects
+          const p = await getAdminProjects();
+          setProjects(p);
+        } else {
+          // Hard delete
+          await adminDeleteProject(deleteModal.id);
+          setProjects((prev) => prev.filter((p) => p.id !== deleteModal.id));
+          toast(`Project "${deleteModal.name}" deleted`, 'success');
+        }
       }
       setDeleteModal({ open: false, type: 'organization', id: '', name: '' });
-      // Refresh stats
+      setBanReason('');
       const newStats = await getAdminStats();
       setStats(newStats);
     } catch (err) {
-      toast(err instanceof Error ? err.message : 'Failed to delete resource', 'error');
+      toast(err instanceof Error ? err.message : 'Failed to delete/ban resource', 'error');
     } finally {
       setDeleting(false);
     }
@@ -542,14 +553,25 @@ export default function AdminDashboardPage() {
               </div>
               <div className="text-center">
                 <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
-                  Admin Delete Confirmation
+                  Admin Action: {deleteModal.type === 'project' ? 'Delete/Ban' : 'Delete'}
                 </h3>
                 <p className="text-sm text-zinc-400 mt-2">
-                  Are you sure you want to permanently delete this {deleteModal.type}: <br />
+                  Are you sure you want to permanently delete or ban this {deleteModal.type}: <br />
                   <strong className="text-red-300 font-semibold">{deleteModal.name}</strong>?
                 </p>
-                <p className="text-xs text-zinc-500 mt-2">
-                  This administrative action cannot be undone and will delete all related sub-resources.
+                {deleteModal.type === 'project' && (
+                  <div className="mt-4 text-left">
+                    <label className="text-xs text-zinc-400 mb-1 block">Optional: Reason for ban/misuse</label>
+                    <Input
+                      placeholder="If provided, project will be banned instead of deleted..."
+                      value={banReason}
+                      onChange={(e) => setBanReason(e.target.value)}
+                      className="bg-zinc-800/50"
+                    />
+                  </div>
+                )}
+                <p className="text-xs text-zinc-500 mt-4">
+                  {banReason ? 'This action will ban the project and record the reason.' : 'This administrative action cannot be undone and will delete all related sub-resources.'}
                 </p>
               </div>
               <div className="flex gap-3 pt-2">
@@ -559,13 +581,16 @@ export default function AdminDashboardPage() {
                   loading={deleting}
                   onClick={confirmDelete}
                 >
-                  Yes, Delete {deleteModal.type}
+                  {banReason ? 'Ban Project' : `Yes, Delete ${deleteModal.type}`}
                 </Button>
                 <Button
                   variant="ghost"
                   className="w-full"
                   disabled={deleting}
-                  onClick={() => setDeleteModal({ open: false, type: 'organization', id: '', name: '' })}
+                  onClick={() => {
+                    setDeleteModal({ open: false, type: 'organization', id: '', name: '' });
+                    setBanReason('');
+                  }}
                 >
                   Cancel
                 </Button>

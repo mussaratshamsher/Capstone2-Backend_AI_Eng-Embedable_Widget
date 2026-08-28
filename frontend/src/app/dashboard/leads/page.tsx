@@ -6,6 +6,7 @@ import DashboardLayout from '@/components/layout/dashboard-layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { TableSkeleton } from '@/components/ui/skeleton';
 import { toast } from '@/components/ui/toast';
 import { getLeads, getLeadStats, updateLeadStatus } from '@/lib/api';
@@ -26,6 +27,7 @@ function LeadsContent() {
   const [stats, setStats] = useState<LeadStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('');
+  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     if (!projectId) return;
@@ -180,8 +182,13 @@ function LeadsContent() {
                           <option value="contacted">Contacted</option>
                           <option value="qualified">Qualified</option>
                           <option value="converted">Converted</option>
-                          <option value="lost">Lost</option>
                         </select>
+                        <button 
+                          onClick={() => setSelectedLeadId(lead.id)}
+                          className="ml-3 text-xs bg-zinc-800 hover:bg-zinc-700 text-white px-2 py-1.5 rounded transition-colors"
+                        >
+                          View Details
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -189,6 +196,87 @@ function LeadsContent() {
               </table>
             </div>
           </Card>
+        )}
+
+        {/* Lead Details Modal */}
+        {selectedLeadId && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in">
+              <div className="flex justify-between items-center p-6 border-b border-zinc-800">
+                <h2 className="text-xl font-bold text-white">Lead Details</h2>
+                <button 
+                  onClick={() => setSelectedLeadId(null)}
+                  className="text-zinc-400 hover:text-white"
+                >
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="p-6 overflow-y-auto flex-1">
+                {(() => {
+                  const lead = leads.find(l => l.id === selectedLeadId);
+                  if (!lead) return <p>Lead not found</p>;
+                  
+                  return (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-xs text-zinc-400 mb-1">Name</p>
+                          <p className="font-medium text-white">{lead.name || 'Unknown'}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-zinc-400 mb-1">Email</p>
+                          <p className="font-medium text-white">{lead.email || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-zinc-400 mb-1">Phone</p>
+                          <p className="font-medium text-white">{lead.phone || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-zinc-400 mb-1">Company</p>
+                          <p className="font-medium text-white">{lead.company || 'Not provided'}</p>
+                        </div>
+                      </div>
+
+                      <div className="bg-zinc-800/50 rounded-lg p-4 border border-zinc-700/50">
+                        <h3 className="text-sm font-semibold text-white mb-3">AI Qualification Details</h3>
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                          <div>
+                            <p className="text-xs text-zinc-400">Score</p>
+                            <p className="text-lg font-bold text-amber-400">{lead.intent_score}/100</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-zinc-400">Status</p>
+                            <p className="text-lg font-bold text-white capitalize">{lead.status}</p>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-xs text-zinc-400 mb-1">Budget</p>
+                          <p className="text-sm text-zinc-300">{lead.budget || 'Not specified'}</p>
+                        </div>
+                        <div className="mt-2">
+                          <p className="text-xs text-zinc-400 mb-1">Timeline</p>
+                          <p className="text-sm text-zinc-300">{lead.timeline || 'Not specified'}</p>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h3 className="text-sm font-semibold text-white mb-2">Raw AI Extraction</h3>
+                        <pre className="bg-black/50 p-4 rounded-lg text-xs text-zinc-300 overflow-x-auto border border-zinc-800">
+                          {JSON.stringify(lead.notes ? { notes: lead.notes } : lead, null, 2)}
+                        </pre>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+              <div className="p-4 border-t border-zinc-800 flex justify-end">
+                <Button onClick={() => setSelectedLeadId(null)}>Close</Button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </DashboardLayout>

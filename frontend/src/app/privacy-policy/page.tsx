@@ -35,6 +35,16 @@ export default function PrivacyPolicyPage() {
             <li>Where it is necessary for our legitimate interests (or those of a third party) and your interests and fundamental rights do not override those interests.</li>
             <li>Where we need to comply with a legal obligation.</li>
           </ul>
+
+          <h2 className="text-2xl font-bold text-white mt-8 mb-4">4. Widget Misuse and Account Termination</h2>
+          <p>
+            To maintain the security and integrity of our platform, we actively monitor the usage of embedded widgets. We reserve the right to immediately suspend or permanently delete any user project or account without prior notice if we detect:
+          </p>
+          <ul className="list-disc pl-5 space-y-2">
+            <li>Violations of our usage policies, including the transmission of malicious content or spam.</li>
+            <li>Attempts to bypass rate limiting, domain whitelisting, or security controls.</li>
+            <li>Misuse of the widget that degrades the performance of our services for other users.</li>
+          </ul>
         </div>
       </main>
     </div>

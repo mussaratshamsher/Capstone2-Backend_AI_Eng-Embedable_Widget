@@ -37,7 +37,7 @@ export async function deleteOrganization(id: string): Promise<void> {
   return apiDelete(`/api/organizations/${id}`);
 }
 
-export async function createProject(organizationId: string, data: { name: string; website_url: string; description?: string; business_type?: string; ai_instructions?: string; welcome_message?: string }): Promise<Project> {
+export async function createProject(organizationId: string, data: { name: string; website_url: string; description?: string; business_type?: string; ai_instructions?: string; welcome_message?: string; theme_color?: string }): Promise<Project> {
   return apiPost<Project>(`/api/projects?organization_id=${organizationId}`, data);
 }
 
@@ -128,4 +128,25 @@ export async function adminDeleteOrganization(id: string): Promise<void> {
 
 export async function adminDeleteProject(id: string): Promise<void> {
   return apiDelete(`/api/admin/projects/${id}`);
+}
+
+export async function adminBanProject(id: string, reason: string): Promise<void> {
+  return apiPost(`/api/admin/projects/${id}/ban`, { reason });
+}
+
+// Webhook API
+export async function getWebhooks(projectId: string): Promise<import('@/types').Webhook[]> {
+  return apiGet<import('@/types').Webhook[]>(`/api/webhooks/project/${projectId}`);
+}
+
+export async function createWebhook(data: import('@/types').WebhookCreate): Promise<import('@/types').Webhook> {
+  return apiPost<import('@/types').Webhook>('/api/webhooks', data);
+}
+
+export async function updateWebhook(id: string, data: import('@/types').WebhookUpdate): Promise<import('@/types').Webhook> {
+  return apiPatch<import('@/types').Webhook>(`/api/webhooks/${id}`, data);
+}
+
+export async function deleteWebhook(id: string): Promise<void> {
+  return apiDelete(`/api/webhooks/${id}`);
 }
