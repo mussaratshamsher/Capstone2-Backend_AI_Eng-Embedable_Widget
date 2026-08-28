@@ -13,23 +13,45 @@ Most website visitors leave without taking action, causing businesses to lose po
 
 LeadForge replaces passive forms with an intelligent AI assistant that converses with visitors, identifies their intent, and delivers only qualified leads directly to the business.
 
+## 🌟 Present Application Features
+
+### 🏢 Multi-Tenant Architecture
+- **Organizations:** Users can create and manage multiple organizations.
+- **Projects:** Each organization can have multiple projects with unique configurations and API keys.
+- **Secure Isolation:** Data is securely isolated between different tenants and projects.
+
+### 🤖 Intelligent AI Chat Widget
+- **Groq LLM Integration:** Fast and responsive AI conversations powered by Groq.
+- **Server-Sent Events (SSE):** Real-time streaming of AI responses for a smooth chat experience.
+- **Customizable Instructions:** Configure what the AI should ask, how it responds, and what makes a lead qualified.
+- **One-Line Integration:** Embed the widget on any website using a single `<script>` tag.
+
+### 🎯 Lead Capture & Qualification
+- **Automated Qualification:** The AI automatically evaluates visitor intent and scores them.
+- **Contact Extraction:** Seamlessly captures visitor contact details during the conversation.
+- **Lead Dashboard:** View and manage captured leads, their scores, and statuses.
+
+### 📊 Analytics & Dashboard (Next.js)
+- **Real-Time Visibility:** Monitor conversation histories and active sessions.
+- **Project Management:** Configure widget settings, domains, and appearance from a centralized UI.
+- **Authentication:** Secure login and registration with JWT.
+
+### 🔌 Integrations & Security
+- **Webhooks:** Push real-time lead and conversation events to external systems (CRMs, Slack, etc.).
+- **Spam Protection:** Built-in ReCaptcha integration to prevent abuse.
+- **Role-Based Access:** Secure API endpoints ensuring only authorized access to project data.
+
 ## ⚙️ How It Works
 1. **Create an Account:** Register and log in. A personal organization is created for you automatically.
 2. **Set Up an Organization & Project:** Create a project inside your organization. This project holds your widget configuration and API key.
-3. **Configure the Widget:** Set the AI instructions—what the widget should ask, how it should respond, and what qualifies a lead for your business.
+3. **Configure the Widget:** Set the AI instructions and system prompts.
 4. **Embed the Widget:** Copy a single `<script>` snippet and paste it into your website's HTML. No complex integration is needed.
 5. **Monitor Leads:** Track captured leads, conversation histories, and conversion rates directly from the dashboard.
 
-## ✨ What You Can Do
-- **Zero Missed Visitors:** The AI engages 24/7 without your team being online.
-- **Pre-Qualified Leads:** Only interested, relevant contacts reach your sales pipeline.
-- **One-Line Integration:** Works on any website with a single script tag.
-- **Real-Time Visibility:** See every conversation and lead score as they happen.
-- **Multi-Tenant Architecture:** Securely isolate queries and projects to specific organizations.
-
 ## 🛠️ Tech Stack
+
 **Frontend:**
-- Next.js (React)
+- Next.js (App Router, React)
 - TypeScript
 - Tailwind CSS
 
