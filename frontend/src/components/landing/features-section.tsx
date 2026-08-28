@@ -1,4 +1,7 @@
+"use client";
+
 import { FeatureCard } from './feature-card';
+import { motion } from 'framer-motion';
 
 export function FeaturesSection() {
   const features = [
@@ -42,7 +45,13 @@ export function FeaturesSection() {
 
   return (
     <section id="features" className="max-w-7xl mx-auto px-4 sm:px-6 py-5 lg:px-8 lg:py-24">
-      <div className="text-center mb-14 animate-fade-up">
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="text-center mb-14"
+      >
         <div className="hero-badge inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium mb-4">
           Features
         </div>
@@ -53,7 +62,7 @@ export function FeaturesSection() {
         <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
           A complete AI lead generation stack — from widget deployment to CRM integration — in one powerful platform.
         </p>
-      </div>
+      </motion.div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {features.map((f, i) => <FeatureCard key={i} {...f} />)}
       </div>

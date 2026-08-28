@@ -1,8 +1,18 @@
 'use client';
 
+import { motion } from 'framer-motion';
+
 export function TestimonialCard({ quote, author, role, delay }: { quote: string; author: string; role: string; delay: number }) {
   return (
-    <div className={`glass rounded-2xl p-6 animate-fade-up delay-${delay}`} style={{ borderColor: 'var(--border-default)' }}>
+    <motion.div 
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, delay: delay / 1000 }}
+      whileHover={{ y: -5, transition: { duration: 0.2 } }}
+      className="glass rounded-2xl p-6 hover:shadow-[0_10px_30px_rgba(124,58,237,0.1)] transition-all duration-300" 
+      style={{ borderColor: 'var(--border-default)' }}
+    >
       <div className="flex mb-3">
         {[...Array(5)].map((_, i) => (
           <svg key={i} className="w-4 h-4" style={{ color: '#a78bfa' }} fill="currentColor" viewBox="0 0 20 20">
@@ -15,6 +25,6 @@ export function TestimonialCard({ quote, author, role, delay }: { quote: string;
         <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{author}</p>
         <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{role}</p>
       </div>
-    </div>
+    </motion.div>
   );
 }

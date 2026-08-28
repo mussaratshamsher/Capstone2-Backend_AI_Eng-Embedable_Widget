@@ -4,10 +4,11 @@ export async function POST(request: Request) {
   try {
     const { plan } = await request.json();
 
-    // Determine the amount based on the plan
+    // Determine the amount based on the plan. Safepay expects amount in lowest denomination (e.g. paise for PKR).
+    // So for 4900 PKR, we pass 490000.
     let amount = 0;
-    if (plan === 'pro') amount = 49.00;
-    else if (plan === 'enterprise') amount = 299.00; // Custom placeholder amount
+    if (plan === 'pro') amount = 490000;
+    else if (plan === 'enterprise') amount = 2990000; // Custom placeholder amount
 
     // Ensure Safepay keys exist
     const clientKey = process.env.SAFE_PAY_PUBLIC_KEY;
@@ -23,6 +24,7 @@ export async function POST(request: Request) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-SFPY-MERCHANT-SECRET': secretKey,
       },
       body: JSON.stringify({
         environment: 'sandbox',

@@ -1,13 +1,22 @@
+"use client";
+
 import { TestimonialCard } from './testimonial-card';
+import { motion } from 'framer-motion';
 
 export function TestimonialsSection() {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-10 lg:py-24">
-      <div className="text-center mb-16 animate-fade-up">
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.6 }}
+        className="text-center mb-16"
+      >
         <h2 className="text-4xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
           Loved by <span className="gradient-text">growth teams</span>
         </h2>
-      </div>
+      </motion.div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <TestimonialCard
           delay={100}

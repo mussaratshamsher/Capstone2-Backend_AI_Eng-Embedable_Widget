@@ -1,12 +1,22 @@
+"use client";
+
+import { motion } from 'framer-motion';
+
 export function HowItWorksSection() {
   return (
     <section id="how-it-works" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-24 relative">
       <div className="absolute top-1/2 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, var(--border-strong), transparent)' }} />
-      <div className="text-center mb-16 relative z-10 animate-fade-up">
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.6 }}
+        className="text-center mb-16 relative z-10"
+      >
         <h2 className="text-4xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
           How <span className="gradient-text">LeadForge</span> Works
         </h2>
-      </div>
+      </motion.div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative z-10">
         {[
           {
@@ -28,7 +38,16 @@ export function HowItWorksSection() {
             delay: 300
           }
         ].map((s, i) => (
-          <div key={i} className={`glass p-4 lg:p-8 rounded-3xl text-center animate-fade-up delay-${s.delay} relative overflow-hidden`} style={{ background: 'var(--bg-elevated)' }}>
+          <motion.div 
+            key={i} 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5, delay: s.delay / 1000 }}
+            whileHover={{ y: -8, transition: { duration: 0.2, delay: 0 } }}
+            className={`glass p-4 lg:p-8 rounded-3xl text-center relative overflow-hidden hover:shadow-[0_15px_50px_rgba(124,58,237,0.15)] transition-shadow duration-300`} 
+            style={{ background: 'var(--bg-elevated)' }}
+          >
             <div className="step-number absolute -top-4 -right-4 opacity-5 text-8xl font-black italic" style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
               {s.step}
             </div>
@@ -38,7 +57,7 @@ export function HowItWorksSection() {
             </div>
             <h3 className="text-xl font-bold mb-3" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-space-grotesk), sans-serif' }}>{s.title}</h3>
             <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{s.desc}</p>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>
