@@ -29,6 +29,15 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, user, router]);
 
+  useEffect(() => {
+    if (RECAPTCHA_SITE_KEY && !document.querySelector(`script[src*="recaptcha/api.js"]`)) {
+      const script = document.createElement('script');
+      script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, [RECAPTCHA_SITE_KEY]);
+
   if (isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-base)' }}>
@@ -91,12 +100,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ background: 'var(--bg-base)' }}>
-      {/* reCAPTCHA Script */}
-      <Script 
-        src={`https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`} 
-        strategy="beforeInteractive" 
-      />
-
       {/* Background orbs */}
       <div className="orb orb-violet" style={{ width: 600, height: 600, top: -200, left: '50%', transform: 'translateX(-50%)' }} />
       <div className="orb orb-blue" style={{ width: 400, height: 400, bottom: -100, right: -100 }} />

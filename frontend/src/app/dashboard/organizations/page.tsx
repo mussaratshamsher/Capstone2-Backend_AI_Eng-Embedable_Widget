@@ -12,6 +12,128 @@ import { createOrganization, listOrganizations } from '@/lib/api';
 import type { Organization } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 
+function OrganizationCard({ org, onUpdate, onDelete }: { org: Organization, onUpdate: (org: Organization) => void, onDelete: (id: string) => void }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [editForm, setEditForm] = useState({
+    name: org.name,
+    description: org.description || '',
+    website_url: org.website_url || ''
+  });
+
+  async function handleSave() {
+    setLoading(true);
+    try {
+      const { updateOrganization } = await import('@/lib/api');
+      const updated = await updateOrganization(org.id, {
+        name: editForm.name,
+        description: editForm.description || undefined,
+        website_url: editForm.website_url || undefined,
+      });
+      onUpdate(updated);
+      setIsEditing(false);
+      toast('Organization updated', 'success');
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to update organization', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <Card hover>
+      <CardHeader>
+        <div className="flex items-start justify-between">
+          <div className="flex-1 mr-4">
+            {isEditing ? (
+              <Input
+                value={editForm.name}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                className="mb-2"
+                placeholder="Organization Name"
+              />
+            ) : (
+              <CardTitle>{org.name}</CardTitle>
+            )}
+            
+            {isEditing ? (
+              <Input
+                value={editForm.description}
+                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                placeholder="Description"
+                className="mt-2 text-sm"
+              />
+            ) : (
+              <CardDescription>{org.description || 'No description'}</CardDescription>
+            )}
+          </div>
+          <Badge variant={org.is_active ? 'success' : 'default'}>
+            {org.is_active ? 'Active' : 'Inactive'}
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-2 text-zinc-400">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.662 1.662m0 0L15 12m0 0l-1.622-1.622m0 0a4.5 4.5 0 00-1.662 1.662m0 0L11 12m0 0l1.622-1.622m0 0a4.5 4.5 0 001.662-1.662m0 0L15 12m0 0l-1.622-1.622" />
+              </svg>
+              {isEditing ? (
+                <Input
+                  value={editForm.website_url}
+                  onChange={(e) => setEditForm({ ...editForm, website_url: e.target.value })}
+                  placeholder="https://example.com"
+                  className="h-8 text-xs"
+                />
+              ) : (
+                <span className="truncate">{org.website_url || 'No website'}</span>
+              )}
+            </div>
+            <div className="flex items-center gap-2 text-zinc-500">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+              </svg>
+              <span>Created {new Date(org.created_at).toLocaleDateString()}</span>
+            </div>
+          </div>
+          
+          <div className="flex gap-2 pt-2 border-t border-zinc-800">
+            {isEditing ? (
+              <>
+                <Button size="sm" variant="primary" onClick={handleSave} loading={loading}>Save</Button>
+                <Button size="sm" variant="ghost" onClick={() => setIsEditing(false)}>Cancel</Button>
+              </>
+            ) : (
+              <>
+                <Button size="sm" variant="secondary" onClick={() => setIsEditing(true)}>Edit</Button>
+                <Button 
+                  size="sm" 
+                  variant="danger" 
+                  onClick={async () => {
+                    if (confirm('Are you sure you want to delete this organization? This action cannot be undone.')) {
+                      try {
+                        const { deleteOrganization } = await import('@/lib/api');
+                        await deleteOrganization(org.id);
+                        onDelete(org.id);
+                        toast('Organization deleted', 'success');
+                      } catch (err) {
+                        toast(err instanceof Error ? err.message : 'Failed to delete organization', 'error');
+                      }
+                    }
+                  }}
+                >
+                  Delete
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function OrganizationsPage() {
   const router = useRouter();
   const { user } = useAuth();
@@ -66,6 +188,14 @@ export default function OrganizationsPage() {
     } else {
       setShowForm(!showForm);
     }
+  };
+
+  const handleUpdateOrg = (updatedOrg: Organization) => {
+    setOrgs(orgs.map(o => o.id === updatedOrg.id ? updatedOrg : o));
+  };
+
+  const handleDeleteOrg = (id: string) => {
+    setOrgs(orgs.filter(o => o.id !== id));
   };
 
   return (
@@ -147,35 +277,12 @@ export default function OrganizationsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {orgs.map((org) => (
-              <Card key={org.id} hover>
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle>{org.name}</CardTitle>
-                      <CardDescription>{org.description || 'No description'}</CardDescription>
-                    </div>
-                    <Badge variant={org.is_active ? 'success' : 'default'}>
-                      {org.is_active ? 'Active' : 'Inactive'}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2 text-zinc-400">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.662 1.662m0 0L15 12m0 0l-1.622-1.622m0 0a4.5 4.5 0 00-1.662 1.662m0 0L11 12m0 0l1.622-1.622m0 0a4.5 4.5 0 001.662-1.662m0 0L15 12m0 0l-1.622-1.622" />
-                      </svg>
-                      <span className="truncate">{org.website_url || 'No website'}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-zinc-500">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-                      </svg>
-                      <span>Created {new Date(org.created_at).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <OrganizationCard 
+                key={org.id} 
+                org={org} 
+                onUpdate={handleUpdateOrg}
+                onDelete={handleDeleteOrg}
+              />
             ))}
           </div>
         )}
