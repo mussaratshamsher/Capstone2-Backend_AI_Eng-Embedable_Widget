@@ -1,11 +1,11 @@
 import { apiPost, apiGet, apiPatch, apiDelete } from './client';
 import type { User, TokenResponse, Organization, Project, Conversation, Message, Lead, LeadStats } from '@/types';
 
-export async function register(data: { email: string; password: string; first_name?: string; last_name?: string }): Promise<TokenResponse> {
+export async function register(data: { email: string; password: string; first_name?: string; last_name?: string; recaptcha_token?: string }): Promise<TokenResponse> {
   return apiPost<TokenResponse>('/api/auth/register', data);
 }
 
-export async function login(data: { email: string; password: string }): Promise<TokenResponse> {
+export async function login(data: { email: string; password: string; recaptcha_token?: string }): Promise<TokenResponse> {
   return apiPost<TokenResponse>('/api/auth/login', data);
 }
 

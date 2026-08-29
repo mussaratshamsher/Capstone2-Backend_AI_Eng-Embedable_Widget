@@ -9,8 +9,8 @@ interface AuthContextValue {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<TokenResponse>;
-  register: (email: string, password: string, first_name?: string, last_name?: string) => Promise<TokenResponse>;
+  login: (email: string, password: string, recaptcha_token?: string) => Promise<TokenResponse>;
+  register: (email: string, password: string, first_name?: string, last_name?: string, recaptcha_token?: string) => Promise<TokenResponse>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -45,16 +45,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [refreshUser]);
 
-  const login = useCallback(async (email: string, password: string) => {
-    const data = await apiLogin({ email, password });
+  const login = useCallback(async (email: string, password: string, recaptcha_token?: string) => {
+    const data = await apiLogin({ email, password, recaptcha_token });
     localStorage.setItem('access_token', data.access_token);
     setToken(data.access_token);
     setUser(data.user);
     return data;
   }, []);
 
-  const register = useCallback(async (email: string, password: string, first_name?: string, last_name?: string) => {
-    const data = await apiRegister({ email, password, first_name, last_name });
+  const register = useCallback(async (email: string, password: string, first_name?: string, last_name?: string, recaptcha_token?: string) => {
+    const data = await apiRegister({ email, password, first_name, last_name, recaptcha_token });
     localStorage.setItem('access_token', data.access_token);
     setToken(data.access_token);
     setUser(data.user);

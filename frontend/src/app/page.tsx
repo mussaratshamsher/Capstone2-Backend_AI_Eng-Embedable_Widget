@@ -8,6 +8,7 @@ import { TestimonialsSection } from '@/components/landing/testimonials-section';
 import { PricingSection } from '@/components/landing/pricing-section';
 import { CTASection } from '@/components/landing/cta-section';
 import { Footer } from '@/components/landing/footer';
+import { FloatingArrow } from '@/components/landing/floating-arrow';
 
 export default function LandingPage() {
   return (
@@ -30,6 +31,7 @@ export default function LandingPage() {
         <CTASection />
       </main>
 
+      <FloatingArrow />
     </div>
   );
 }

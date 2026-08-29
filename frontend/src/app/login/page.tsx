@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Script from 'next/script';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +18,9 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [role, setRole] = useState<'user' | 'admin'>('user');
+
+  // Add the site key for reCAPTCHA
+  const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -46,7 +50,23 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const res = await login(email, password);
+      let recaptchaToken = '';
+      
+      // Execute reCAPTCHA if loaded
+      if (typeof window !== 'undefined' && (window as any).grecaptcha) {
+        try {
+          recaptchaToken = await new Promise<string>((resolve) => {
+            (window as any).grecaptcha.ready(() => {
+              (window as any).grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'login' })
+                .then((token: string) => resolve(token));
+            });
+          });
+        } catch (err) {
+          console.error("reCAPTCHA error:", err);
+        }
+      }
+
+      const res = await login(email, password, recaptchaToken);
       const isAdmin = res.user?.is_superadmin || res.user?.role === 'admin' || res.user?.email === 'leadforge@gmail.com';
       if (isAdmin) {
         toast('Welcome Administrator! Opening Admin Dashboard...', 'success');
@@ -71,6 +91,12 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ background: 'var(--bg-base)' }}>
+      {/* reCAPTCHA Script */}
+      <Script 
+        src={`https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`} 
+        strategy="beforeInteractive" 
+      />
+
       {/* Background orbs */}
       <div className="orb orb-violet" style={{ width: 600, height: 600, top: -200, left: '50%', transform: 'translateX(-50%)' }} />
       <div className="orb orb-blue" style={{ width: 400, height: 400, bottom: -100, right: -100 }} />
