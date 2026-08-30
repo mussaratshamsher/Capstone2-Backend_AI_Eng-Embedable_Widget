@@ -30,7 +30,7 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ name: '', website_url: '', description: '', ai_instructions: '', welcome_message: '', business_type: '', theme_color: '#7c3aed' });
+  const [formData, setFormData] = useState({ name: '', website_url: '', description: '', ai_instructions: '', welcome_message: '', business_type: '', theme_color: '#7c3aed', allowed_domains: '' });
 
   const loadOrgs = useCallback(async () => {
     try {
@@ -76,9 +76,10 @@ export default function ProjectsPage() {
         ai_instructions: formData.ai_instructions || undefined,
         welcome_message: formData.welcome_message || undefined,
         theme_color: formData.theme_color || '#7c3aed',
+        allowed_domains: formData.allowed_domains ? formData.allowed_domains.split(',').map(d => d.trim()).filter(Boolean) : undefined,
       });
       setProjects([project, ...projects]);
-      setFormData({ name: '', website_url: '', description: '', ai_instructions: '', welcome_message: '', business_type: '', theme_color: '#7c3aed' });
+      setFormData({ name: '', website_url: '', description: '', ai_instructions: '', welcome_message: '', business_type: '', theme_color: '#7c3aed', allowed_domains: '' });
       setShowForm(false);
       toast('Project created', 'success');
     } catch (err) {
@@ -220,6 +221,12 @@ export default function ProjectsPage() {
                 placeholder="Hello! How can I help you today?"
                 value={formData.welcome_message}
                 onChange={(e) => setFormData({ ...formData, welcome_message: e.target.value })}
+              />
+              <Input
+                label="Allowed Domains (Whitelisting)"
+                placeholder="example.com, my-store.com (Leave blank to allow all)"
+                value={formData.allowed_domains}
+                onChange={(e) => setFormData({ ...formData, allowed_domains: e.target.value })}
               />
               <div className="flex gap-3">
                 <Button type="submit" loading={creating}>Create</Button>

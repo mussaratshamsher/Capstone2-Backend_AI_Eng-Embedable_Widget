@@ -37,7 +37,7 @@ export async function deleteOrganization(id: string): Promise<void> {
   return apiDelete(`/api/organizations/${id}`);
 }
 
-export async function createProject(organizationId: string, data: { name: string; website_url: string; description?: string; business_type?: string; ai_instructions?: string; welcome_message?: string; theme_color?: string }): Promise<Project> {
+export async function createProject(organizationId: string, data: import('@/types').ProjectCreate): Promise<Project> {
   return apiPost<Project>(`/api/projects?organization_id=${organizationId}`, data);
 }
 

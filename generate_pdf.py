@@ -43,7 +43,7 @@ sections = [
     
     ("5. Tech Stack Overview", "- Frontend: Next.js (React)\n- Backend: Python, FastAPI\n- Database & Auth: Supabase (PostgreSQL)\n- Payments: SafePay\n- Security: Google reCAPTCHA\n- Deployment: Vercel (Frontend & Backend)"),
     
-    ("6. Core Features & Reasons", "- Dynamic Form Rendering: Increases conversion rates through tailored user experiences.\n- Real-Time CRM Synchronization: Enables sales teams to contact leads within seconds of submission.\n- Automated Workflows: Reduces manual overhead and human error in data entry.\n- Integrated Payment Gateway: Allows for immediate consultation fee or deposit collection."),
+    ("6. Core Features & Reasons", "- Domain Whitelisting: Restrict widget usage to specific authorized domains to prevent credit theft and misuse.\n- Custom Branding: Easily configure theme colors for the widget to match the brand identity.\n- Dynamic Form Rendering: Increases conversion rates through tailored user experiences.\n- Real-Time CRM Synchronization: Enables sales teams to contact leads within seconds of submission.\n- Automated Workflows: Reduces manual overhead and human error in data entry.\n- Integrated Payment Gateway: Allows for immediate consultation fee or deposit collection."),
     
     ("7. Technical Decisions (Architecture Justifications)", ""),
     

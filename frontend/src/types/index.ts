@@ -114,6 +114,10 @@ export interface Project {
   status: ProjectStatusValue;
   api_key: string;
   is_active: boolean;
+  theme_color?: string;
+  allowed_domains?: string[];
+  is_banned?: boolean;
+  ban_reason?: string | null;
   created_at: string;
   updated_at: string;
   conversation_count?: number;
@@ -127,6 +131,8 @@ export interface ProjectCreate {
   business_type?: string;
   ai_instructions?: string;
   welcome_message?: string;
+  theme_color?: string;
+  allowed_domains?: string[];
 }
 
 export interface ProjectUpdate {
@@ -137,6 +143,8 @@ export interface ProjectUpdate {
   ai_instructions?: string;
   welcome_message?: string;
   status?: ProjectStatusValue;
+  theme_color?: string;
+  allowed_domains?: string[];
 }
 
 export interface ConversationStatus {

@@ -37,6 +37,9 @@ LeadForge replaces passive forms with an intelligent AI assistant that converses
 - **Authentication:** Secure login and registration with JWT.
 
 ### 🔌 Integrations & Security
+- **Domain Whitelisting:** Restrict widget usage to specific authorized domains to prevent credit theft and misuse.
+- **Project Ban Management:** Admin-level controls to ban misusing projects and track ban reasons.
+- **Custom Branding:** Configure custom widget theme colors via the dashboard.
 - **Webhooks:** Push real-time lead and conversation events to external systems (CRMs, Slack, etc.).
 - **Spam Protection:** Built-in ReCaptcha integration to prevent abuse.
 - **Role-Based Access:** Secure API endpoints ensuring only authorized access to project data.
