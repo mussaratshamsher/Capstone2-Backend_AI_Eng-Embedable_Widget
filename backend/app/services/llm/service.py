@@ -97,11 +97,27 @@ class LLMService:
             if isinstance(final_response, tuple):
                 final_response = final_response[0]
             
+            # Combine the initial text and the final text
+            full_text = []
+            if text_response and text_response.strip():
+                full_text.append(text_response.strip())
+            if final_response and final_response.strip():
+                full_text.append(final_response.strip())
+                
+            combined_response = " ".join(full_text)
+            
             import re
-            return re.sub(r'<think>.*?</think>', '', final_response, flags=re.DOTALL).strip()
+            # Strip <think>...</think> blocks and any unclosed <think>... blocks
+            combined_response = re.sub(r'<think>.*?</think>', '', combined_response, flags=re.DOTALL)
+            combined_response = re.sub(r'<think>.*', '', combined_response, flags=re.DOTALL)
+            clean_response = combined_response.strip()
+            return clean_response if clean_response else "I have completed the task."
             
         import re
-        return re.sub(r'<think>.*?</think>', '', response, flags=re.DOTALL).strip()
+        response = re.sub(r'<think>.*?</think>', '', response, flags=re.DOTALL)
+        response = re.sub(r'<think>.*', '', response, flags=re.DOTALL)
+        clean_response = response.strip()
+        return clean_response if clean_response else "I have completed the task."
     
     async def stream_ai_response(
         self,
@@ -127,7 +143,8 @@ class LLMService:
             )
             
             # Strip <think>...</think> blocks
-            final_text = re.sub(r'<think>.*?</think>', '', final_text, flags=re.DOTALL).strip()
+            final_text = re.sub(r'<think>.*?</think>', '', final_text, flags=re.DOTALL)
+            final_text = re.sub(r'<think>.*', '', final_text, flags=re.DOTALL).strip()
             
             # Simulate typing effect
             chunk_size = 2
